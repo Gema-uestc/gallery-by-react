@@ -57,7 +57,7 @@ class ImgFigure extends React.Component {
 
     //如果图片旋转角度有值且不为0，添加旋转角度
     if(this.props.arrange.rotate){
-      (['Moz','Ms','Webkit','']).forEach((value)=>{
+      (['Moz','ms','Webkit','']).forEach((value)=>{
         styleObj[value + 'transform'] = 'rotate(' + this.props.arrange.rotate + 'deg)';
       });
     }
@@ -65,7 +65,7 @@ class ImgFigure extends React.Component {
     if(this.props.arrange.isCenter){
       styleObj.zIndex=11;
     }
-    let imgFigureClassName = "img-figure";
+    let imgFigureClassName = 'img-figure';
     imgFigureClassName += this.props.arrange.isInverse ? ' is-inverse' : '';
 
     return (
@@ -82,6 +82,43 @@ class ImgFigure extends React.Component {
       </figure>
 
   );
+  }
+}
+
+//控制组件
+class ControllerUnit extends React.Component{
+  constructor(props){
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+  /*
+  *
+  * imgsFigue的点击处理函数
+  *
+  * */
+  handleClick(e){
+    if(this.props.arrange.isCenter){
+      this.props.inverse();
+    }else {
+      this.props.center();
+    }
+    e.stopPropagation();
+    e.preventDefault();
+  }
+  render(){
+    let controllerUnitClassName = 'controller-unit';
+
+    //如果对应的是居中的图片，显示控制按钮的居中态
+    if(this.props.arrange.isCenter){
+      controllerUnitClassName += ' is-center';
+      //如果同时对应的是翻转态，显示控制按钮的翻转态
+      if(this.props.arrange.isInverse){
+        controllerUnitClassName += ' is-inverse';
+      }
+    }
+    return(
+      <span className={controllerUnitClassName} onClick={this.handleClick}></span>
+    );
   }
 }
 
@@ -108,7 +145,7 @@ class AppComponent extends React.Component {
 
     this.state = {
       imgsArrangeArr: [
-/*        {
+/*        {http://localhost:8000/webpack-dev-server/
          pos:{
            left:'0',
            top:'0'
@@ -205,6 +242,7 @@ class AppComponent extends React.Component {
       };
 
     }
+
     if (imgsArrangeTopArr && imgsArrangeTopArr[0]) {
       imgsArrangeArr.splice(topImgSpliceIndex, 0, imgsArrangeTopArr[0]);
     }
@@ -283,7 +321,9 @@ class AppComponent extends React.Component {
         };
       }
 
-      imgFigures.push(<ImgFigure data={value} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
+      imgFigures.push(<ImgFigure key={index} data={value} ref={'imgFigure'+index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
+
+      controllerUnits.push(<ControllerUnit key={index} arrange={this.state.imgsArrangeArr[index]} inverse={this.inverse(index)} center={this.center(index)}/>);
     }.bind(this));
     return (
       <section className="stage" ref="stage">
